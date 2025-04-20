@@ -327,6 +327,86 @@ class IoTModel:
             logging.error(f"Error saving training history plot: {e}")
             raise
     
+    def plot_classifier_performance(self, y_train: np.ndarray, y_pred_train: np.ndarray, 
+                                  y_test: np.ndarray, y_pred_test: np.ndarray):
+        """Plot detailed classifier performance including confusion matrices and classification reports."""
+        try:
+            # Create figure with subplots
+            fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+            fig.suptitle('Classifier Performance Analysis', fontsize=16)
+            
+            # Plot confusion matrices
+            for idx, (y_true, y_pred, title) in enumerate([
+                (y_train, y_pred_train, 'Training Set'),
+                (y_test, y_pred_test, 'Test Set')
+            ]):
+                cm = confusion_matrix(y_true, y_pred)
+                sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=axes[0, idx])
+                axes[0, idx].set_title(f'Confusion Matrix - {title}')
+                axes[0, idx].set_xlabel('Predicted')
+                axes[0, idx].set_ylabel('Actual')
+            
+            # Calculate metrics
+            metrics = ['accuracy', 'precision', 'recall', 'f1']
+            train_metrics = [
+                accuracy_score(y_train, y_pred_train),
+                precision_score(y_train, y_pred_train),
+                recall_score(y_train, y_pred_train),
+                f1_score(y_train, y_pred_train)
+            ]
+            test_metrics = [
+                accuracy_score(y_test, y_pred_test),
+                precision_score(y_test, y_pred_test),
+                recall_score(y_test, y_pred_test),
+                f1_score(y_test, y_pred_test)
+            ]
+            
+            # Plot metrics comparison
+            x = np.arange(len(metrics))
+            width = 0.35
+            
+            axes[1, 0].bar(x - width/2, train_metrics, width, label='Train')
+            axes[1, 0].bar(x + width/2, test_metrics, width, label='Test')
+            axes[1, 0].set_title('Performance Metrics Comparison')
+            axes[1, 0].set_xticks(x)
+            axes[1, 0].set_xticklabels(metrics)
+            axes[1, 0].legend()
+            axes[1, 0].set_ylim(0, 1)
+            
+            # Add metric values on top of bars
+            for i, (train_val, test_val) in enumerate(zip(train_metrics, test_metrics)):
+                axes[1, 0].text(i - width/2, train_val + 0.02, f'{train_val:.3f}', ha='center')
+                axes[1, 0].text(i + width/2, test_val + 0.02, f'{test_val:.3f}', ha='center')
+            
+            # Classification reports
+            train_report = classification_report(y_train, y_pred_train, output_dict=True)
+            test_report = classification_report(y_test, y_pred_test, output_dict=True)
+            
+            # Plot classification reports
+            report_text = f"Training Set Classification Report:\n\n{classification_report(y_train, y_pred_train)}\n\n"
+            report_text += f"Test Set Classification Report:\n\n{classification_report(y_test, y_pred_test)}"
+            
+            axes[1, 1].text(0.1, 0.5, report_text, fontfamily='monospace', fontsize=10)
+            axes[1, 1].axis('off')
+            
+            plt.tight_layout()
+            
+            # Save plot
+            classifier_path = self.output_dir / "classifier_performance.png"
+            plt.savefig(classifier_path)
+            plt.close()
+            logging.info(f"Classifier performance plot saved successfully to: {classifier_path}")
+            
+            # Log classification reports
+            logging.info("\nTraining Set Classification Report:")
+            logging.info(classification_report(y_train, y_pred_train))
+            logging.info("\nTest Set Classification Report:")
+            logging.info(classification_report(y_test, y_pred_test))
+            
+        except Exception as e:
+            logging.error(f"Error saving classifier performance plot: {e}")
+            raise
+    
     def train_model(self, X: pd.DataFrame, y: pd.Series, model_type: str = "random_forest") -> Optional[Pipeline]:
         """Train a model with hyperparameter tuning."""
         try:
@@ -438,6 +518,13 @@ class IoTModel:
                 # Plot training metrics
                 self.plot_training_metrics(y_train, y_pred_train, y_test, y_pred_test)
                 
+                # Convert predictions to binary
+                y_pred_train = (y_pred_train > 0.5).astype(int)
+                y_pred_test = (y_pred_test > 0.5).astype(int)
+                
+                # Plot classifier performance
+                self.plot_classifier_performance(y_train, y_pred_train, y_test, y_pred_test)
+                
                 # Save model
                 self.model = model
                 self.save_model()
@@ -514,6 +601,9 @@ class IoTModel:
                 if model_type == "random_forest":
                     logging.info("Generating feature importance plot...")
                     self.plot_feature_importance(X.columns)
+                
+                # Plot classifier performance
+                self.plot_classifier_performance(y_train, y_pred_train, y_test, y_pred_test)
                 
                 # Save model
                 logging.info("Saving model and metadata...")

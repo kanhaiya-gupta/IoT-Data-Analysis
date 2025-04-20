@@ -414,3 +414,81 @@ outputs/advanced_analysis/cross_correlations.png
    - Identifies optimal prediction windows
    - Shows complex inter-variable relationships
    - Highlights lagged dependencies
+
+## Training Outputs
+
+The model training process generates several outputs in the `outputs/training/` directory:
+
+### 1. Model Performance Visualizations
+```
+outputs/training/roc_curve.png
+```
+![ROC Curve](outputs/training/roc_curve.png)
+- Receiver Operating Characteristic (ROC) curves for both training and test sets
+- Area Under Curve (AUC) scores for model evaluation
+- Overfitting detection through AUC comparison
+
+### 2. Classifier Performance
+```
+outputs/training/classifier_performance.png
+```
+![Classifier Performance](outputs/training/classifier_performance.png)
+- Performance metrics comparison between training and test sets:
+  - Accuracy
+  - Precision
+  - Recall
+  - F1 Score
+- Confusion matrices for both datasets
+- Classification reports with detailed metrics
+- Visual comparison of model performance
+
+### 3. Feature Importance Analysis
+```
+outputs/training/feature_importance.png
+```
+![Feature Importance](outputs/training/feature_importance.png)
+- Relative importance of each feature in the model
+- Sorted feature importance scores
+- Visual representation of feature contributions
+
+### 4. Training Metrics
+```
+outputs/training/training_metrics.png
+```
+![Training Metrics](outputs/training/training_metrics.png)
+- Accuracy, precision, recall, and F1 scores
+- Confusion matrices for both training and test sets
+- Performance comparison between datasets
+
+### 5. Training History (Neural Network)
+```
+outputs/training/training_history.png
+```
+![Training History](outputs/training/training_history.png)
+- Loss curves for training and validation
+- Accuracy progression over epochs
+- Early stopping indicators
+
+### 6. Model Files
+```
+models/
+├── model.pkl              # Trained model
+└── model_metadata.json    # Model configuration and metrics
+```
+
+### Training Output Usage
+
+1. View model performance:
+   ```bash
+   python src/model_training.py
+   ```
+
+2. Generated outputs can be found in:
+   ```
+   outputs/training/
+   ```
+
+3. Model files are saved in:
+   ```
+   models/
+   ```
