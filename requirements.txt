@@ -1,0 +1,9 @@
+pandas
+requests
+paho-mqtt
+matplotlib
+seaborn
+statsmodels
+scikit-learn
+numpy
+jupyter
