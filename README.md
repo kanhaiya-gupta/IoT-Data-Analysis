@@ -185,6 +185,97 @@ src/data_analysis.py
 - Time series patterns
 - Distribution analysis
 
+### Data Visualization
+
+The system provides comprehensive visualization capabilities for both real-time and historical data analysis.
+
+#### 1. Traffic Pattern Analysis
+```
+outputs/streaming/traffic_patterns.png
+```
+![Traffic Patterns](outputs/streaming/traffic_patterns.png)
+- **Hourly Patterns**: Shows peak traffic hours and daily variations
+- **Daily Patterns**: Reveals weekday vs weekend traffic differences
+- **Weekly Patterns**: Displays traffic distribution across days of the week
+- **Distribution Analysis**: 
+  - Light vehicles show higher variability (std: 38.84)
+  - Heavy vehicles have more consistent patterns (std: 3.20)
+- **Box Plots**: Visualizes the statistical distribution of vehicle counts
+
+#### 2. Environmental Analysis
+```
+outputs/streaming/environmental_time_series.png
+```
+![Environmental Time Series](outputs/streaming/environmental_time_series.png)
+- **Daily Trends**: Shows daily variations in environmental conditions
+- **Variable Ranges**:
+  - Temperature: 1.54°C to 23.20°C (avg std: 3.14)
+  - Humidity: 32.01% to 97.32% (avg std: 13.28)
+  - Pressure: 999.27 to 1036.47 hPa (avg std: 2.09)
+  - Radiation: 6.04 to 240.73 W/m² (avg std: 170.58)
+  - Sunshine: 0.00 to 599.55 minutes (avg std: 189.95)
+  - Precipitation: 0.00 to 0.23 mm (avg std: 0.02)
+
+#### 3. Environmental Correlations
+```
+outputs/streaming/environmental_correlations.png
+```
+![Environmental Correlations](outputs/streaming/environmental_correlations.png)
+- **Strong Correlations**:
+  - Humidity vs Temperature: -0.63
+  - Radiation vs Sunshine: 0.74
+  - Humidity vs Radiation: -0.58
+- **Weak Correlations**:
+  - Pressure vs Temperature: -0.14
+  - Precipitation vs Temperature: -0.04
+  - Pressure vs Radiation: 0.03
+
+#### 4. Traffic-Environment Relationships
+```
+outputs/streaming/traffic_vs_environment.png
+```
+![Traffic vs Environment](outputs/streaming/traffic_vs_environment.png)
+- **Temperature Impact**:
+  - Light vehicles: 0.254 correlation
+  - Heavy vehicles: 0.255 correlation
+- **Humidity Impact**:
+  - Light vehicles: -0.365 correlation
+  - Heavy vehicles: -0.365 correlation
+- **Precipitation Impact**:
+  - Light vehicles: -0.021 correlation
+  - Heavy vehicles: -0.024 correlation
+- **Pressure Impact**:
+  - Light vehicles: -0.083 correlation
+  - Heavy vehicles: -0.081 correlation
+
+#### 5. Real-time Data Streams
+The system processes and visualizes IoT data in real-time, providing comprehensive insights into traffic and environmental patterns.
+
+- **Traffic Analysis Visualizations**:
+  - Combined analysis of light and heavy vehicles
+  - Daily traffic patterns
+  - Traffic distribution by vehicle type
+  - Peak hours identification
+
+- **Environmental Analysis Visualizations**:
+  - Temperature trends
+  - Humidity patterns
+  - Radiation levels
+  - Pressure variations
+  - Sunshine duration
+  - Precipitation data
+
+- **Environmental Patterns**:
+  - Daily environmental patterns
+  - Seasonal variations
+  - Weather trends
+
+- **Combined Analysis**:
+  - Impact of weather on traffic
+  - Environmental influence on vehicle flow
+  - Combined pattern analysis
+
+
 #### Advanced Analysis
 ```
 outputs/advanced_analysis/advanced_time_series_[variable].png
@@ -477,81 +568,6 @@ src/data_visualization.py
 - Cross-validation
 - Feature importance analysis
 
-### Analysis Features
-
-#### Basic Analysis
-- Statistical summaries
-- Correlation analysis
-- Time series patterns
-- Distribution analysis
-
-#### Advanced Analysis
-```
-outputs/advanced_analysis/advanced_time_series_[variable].png
-```
-Where [variable] can be:
-- heavy_vehicles
-- light_vehicles
-- humidity
-- precipitation
-- pressure
-- radiation
-- sunshine
-- temperature
-
-Example:
-```
-outputs/advanced_analysis/advanced_time_series_heavy_vehicles.png
-```
-![Time Series Analysis](outputs/advanced_analysis/advanced_time_series_heavy_vehicles.png)
-
-- **Available Time Series Plots**:
-  - Heavy vehicles: `advanced_time_series_heavy_vehicles.png`
-  - Light vehicles: `advanced_time_series_light_vehicles.png`
-  - Humidity: `advanced_time_series_humidity.png`
-  - Precipitation: `advanced_time_series_precipitation.png`
-  - Pressure: `advanced_time_series_pressure.png`
-  - Radiation: `advanced_time_series_radiation.png`
-  - Sunshine: `advanced_time_series_sunshine.png`
-  - Temperature: `advanced_time_series_temperature.png`
-
-#### Cross-Correlation Analysis
-```
-outputs/advanced_analysis/cross_correlations.png
-```
-![Cross-Correlations](outputs/advanced_analysis/cross_correlations.png)
-
-- **Lag Analysis**:
-  - Correlation patterns across different time lags
-  - Lead-lag relationships between variables
-  - Maximum correlation identification
-- **Key Features**:
-  - 24-hour lag window
-  - Multiple variable comparison
-  - Statistical significance indicators
-  - Lagged effect visualization
-
-#### Advanced Analysis Insights
-1. **Time Series Patterns**:
-   - Strong daily and weekly seasonality in traffic data
-   - Environmental variables show clear diurnal patterns
-   - Trend components reveal long-term changes
-   - Stationarity analysis shows data characteristics
-
-2. **Cross-Correlation**:
-   - Reveals delayed effects of weather on traffic
-   - Identifies optimal prediction windows
-   - Shows complex inter-variable relationships
-   - Highlights lagged dependencies
-
-#### Visualization
-```
-src/data_visualization.py
-```
-- Time series plots
-- Correlation heatmaps
-- Distribution plots
-- Model performance visualizations
 
 ### Training Outputs
 
@@ -630,96 +646,6 @@ models/
    ```
    models/
    ```
-
-### Data Visualization
-
-The system provides comprehensive visualization capabilities for both real-time and historical data analysis.
-
-#### 1. Traffic Pattern Analysis
-```
-outputs/streaming/traffic_patterns.png
-```
-![Traffic Patterns](outputs/streaming/traffic_patterns.png)
-- **Hourly Patterns**: Shows peak traffic hours and daily variations
-- **Daily Patterns**: Reveals weekday vs weekend traffic differences
-- **Weekly Patterns**: Displays traffic distribution across days of the week
-- **Distribution Analysis**: 
-  - Light vehicles show higher variability (std: 38.84)
-  - Heavy vehicles have more consistent patterns (std: 3.20)
-- **Box Plots**: Visualizes the statistical distribution of vehicle counts
-
-#### 2. Environmental Analysis
-```
-outputs/streaming/environmental_time_series.png
-```
-![Environmental Time Series](outputs/streaming/environmental_time_series.png)
-- **Daily Trends**: Shows daily variations in environmental conditions
-- **Variable Ranges**:
-  - Temperature: 1.54°C to 23.20°C (avg std: 3.14)
-  - Humidity: 32.01% to 97.32% (avg std: 13.28)
-  - Pressure: 999.27 to 1036.47 hPa (avg std: 2.09)
-  - Radiation: 6.04 to 240.73 W/m² (avg std: 170.58)
-  - Sunshine: 0.00 to 599.55 minutes (avg std: 189.95)
-  - Precipitation: 0.00 to 0.23 mm (avg std: 0.02)
-
-#### 3. Environmental Correlations
-```
-outputs/streaming/environmental_correlations.png
-```
-![Environmental Correlations](outputs/streaming/environmental_correlations.png)
-- **Strong Correlations**:
-  - Humidity vs Temperature: -0.63
-  - Radiation vs Sunshine: 0.74
-  - Humidity vs Radiation: -0.58
-- **Weak Correlations**:
-  - Pressure vs Temperature: -0.14
-  - Precipitation vs Temperature: -0.04
-  - Pressure vs Radiation: 0.03
-
-#### 4. Traffic-Environment Relationships
-```
-outputs/streaming/traffic_vs_environment.png
-```
-![Traffic vs Environment](outputs/streaming/traffic_vs_environment.png)
-- **Temperature Impact**:
-  - Light vehicles: 0.254 correlation
-  - Heavy vehicles: 0.255 correlation
-- **Humidity Impact**:
-  - Light vehicles: -0.365 correlation
-  - Heavy vehicles: -0.365 correlation
-- **Precipitation Impact**:
-  - Light vehicles: -0.021 correlation
-  - Heavy vehicles: -0.024 correlation
-- **Pressure Impact**:
-  - Light vehicles: -0.083 correlation
-  - Heavy vehicles: -0.081 correlation
-
-#### 5. Real-time Data Streams
-The system processes and visualizes IoT data in real-time, providing comprehensive insights into traffic and environmental patterns.
-
-- **Traffic Analysis Visualizations**:
-  - Combined analysis of light and heavy vehicles
-  - Daily traffic patterns
-  - Traffic distribution by vehicle type
-  - Peak hours identification
-
-- **Environmental Analysis Visualizations**:
-  - Temperature trends
-  - Humidity patterns
-  - Radiation levels
-  - Pressure variations
-  - Sunshine duration
-  - Precipitation data
-
-- **Environmental Patterns**:
-  - Daily environmental patterns
-  - Seasonal variations
-  - Weather trends
-
-- **Combined Analysis**:
-  - Impact of weather on traffic
-  - Environmental influence on vehicle flow
-  - Combined pattern analysis
 
 ## Usage
 
