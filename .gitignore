@@ -18,6 +18,9 @@ build/
 *.log
 .DS_Store
 
+# data
+/data
+
 # bash files
 *.sh
 *.ps1
