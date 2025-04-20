@@ -340,41 +340,35 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### 1. Time Series Analysis
 ```
-outputs/advanced_analysis/time_series_*.png
+outputs/advanced_analysis/advanced_time_series_[variable].png
 ```
-![Time Series Analysis](outputs/advanced_analysis/time_series_*.png)
+Where [variable] can be:
+- heavy_vehicles
+- light_vehicles
+- humidity
+- precipitation
+- pressure
+- radiation
+- sunshine
+- temperature
 
-- **Stationarity Analysis**:
-  - Augmented Dickey-Fuller test for trend detection
-  - Rolling statistics visualization
-  - Multiple seasonal pattern analysis
-- **Components**:
-  - Original time series
-  - Trend component
-  - Seasonal component
-  - Residual component
-- **Key Features**:
-  - 24-hour and weekly seasonal patterns
-  - Rolling mean and standard deviation
-  - Anomaly detection markers
-
-### 2. Anomaly Detection
+Example:
 ```
-outputs/advanced_analysis/anomaly_detection_*.png
+outputs/advanced_analysis/advanced_time_series_heavy_vehicles.png
 ```
-![Anomaly Detection](outputs/advanced_analysis/anomaly_detection_*.png)
+![Time Series Analysis](outputs/advanced_analysis/advanced_time_series_heavy_vehicles.png)
 
-- **Isolation Forest Algorithm**:
-  - Detects unusual patterns in traffic and environmental data
-  - Anomaly scoring system
-  - Visual identification of outliers
-- **Key Features**:
-  - Automatic contamination level adjustment
-  - Multi-variable anomaly detection
-  - Anomaly score visualization
-  - Outlier impact analysis
+- **Available Time Series Plots**:
+  - Heavy vehicles: `advanced_time_series_heavy_vehicles.png`
+  - Light vehicles: `advanced_time_series_light_vehicles.png`
+  - Humidity: `advanced_time_series_humidity.png`
+  - Precipitation: `advanced_time_series_precipitation.png`
+  - Pressure: `advanced_time_series_pressure.png`
+  - Radiation: `advanced_time_series_radiation.png`
+  - Sunshine: `advanced_time_series_sunshine.png`
+  - Temperature: `advanced_time_series_temperature.png`
 
-### 3. Cross-Correlation Analysis
+### 2. Cross-Correlation Analysis
 ```
 outputs/advanced_analysis/cross_correlations.png
 ```
@@ -389,38 +383,6 @@ outputs/advanced_analysis/cross_correlations.png
   - Multiple variable comparison
   - Statistical significance indicators
   - Lagged effect visualization
-
-### 4. Seasonal Decomposition
-```
-outputs/advanced_analysis/seasonal_decomposition_*.png
-```
-![Seasonal Decomposition](outputs/advanced_analysis/seasonal_decomposition_*.png)
-
-- **Multiple Seasonal Patterns**:
-  - Daily patterns (24-hour cycles)
-  - Weekly patterns (168-hour cycles)
-  - Trend analysis
-- **Key Features**:
-  - Additive and multiplicative decomposition
-  - Residual analysis
-  - Pattern strength indicators
-  - Seasonal component visualization
-
-### 5. Statistical Analysis
-```
-outputs/advanced_analysis/statistical_analysis_*.png
-```
-![Statistical Analysis](outputs/advanced_analysis/statistical_analysis_*.png)
-
-- **Distribution Analysis**:
-  - Probability density functions
-  - Cumulative distribution functions
-  - Statistical tests
-- **Key Features**:
-  - Normality tests
-  - Skewness and kurtosis analysis
-  - Confidence intervals
-  - Hypothesis testing
 
 ## Advanced Analysis Usage
 
@@ -447,26 +409,8 @@ outputs/advanced_analysis/statistical_analysis_*.png
    - Trend components reveal long-term changes
    - Stationarity analysis shows data characteristics
 
-2. **Anomaly Detection**:
-   - Identifies unusual traffic patterns
-   - Detects environmental sensor anomalies
-   - Helps in data quality assessment
-   - Provides outlier impact analysis
-
-3. **Cross-Correlation**:
+2. **Cross-Correlation**:
    - Reveals delayed effects of weather on traffic
    - Identifies optimal prediction windows
    - Shows complex inter-variable relationships
    - Highlights lagged dependencies
-
-4. **Seasonal Analysis**:
-   - Quantifies seasonal pattern strength
-   - Separates trend from seasonal effects
-   - Helps in forecasting model selection
-   - Shows multiple seasonal components
-
-5. **Statistical Insights**:
-   - Reveals data distribution characteristics
-   - Identifies non-normal patterns
-   - Provides confidence in analysis
-   - Supports hypothesis testing
