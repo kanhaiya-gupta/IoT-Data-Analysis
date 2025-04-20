@@ -95,23 +95,41 @@ Example visualizations from the streaming outputs:
    - Compares light vs. heavy vehicle patterns
    - Identifies peak traffic hours
 
-2. **Environmental Conditions**
+2. **Environmental Patterns**
+   ```
+   outputs/streaming/environmental_patterns.png
+   ```
+   ![Environmental Patterns](outputs/streaming/environmental_patterns.png)
+   - Daily patterns of environmental variables
+   - Temperature and humidity trends
+   - Radiation and pressure variations
+
+3. **Environmental Time Series**
+   ```
+   outputs/streaming/environmental_time_series.png
+   ```
+   ![Environmental Time Series](outputs/streaming/environmental_time_series.png)
+   - Continuous monitoring of environmental factors
+   - Long-term trends and patterns
+   - Seasonal variations
+
+4. **Environmental Correlations**
    ```
    outputs/streaming/environmental_correlations.png
    ```
    ![Environmental Correlations](outputs/streaming/environmental_correlations.png)
-   - Temperature and humidity trends
-   - Radiation levels throughout the day
-   - Pressure variations
+   - Relationships between different environmental variables
+   - Correlation heatmap
+   - Statistical dependencies
 
-3. **Traffic-Environment Correlation**
+5. **Traffic-Environment Relationship**
    ```
-   outputs/streaming/traffic_environment_correlation.png
+   outputs/streaming/traffic_vs_environment.png
    ```
-   ![Traffic-Environment Correlation](outputs/streaming/traffic_environment_correlation.png)
-   - Relationship between weather and traffic
-   - Impact of environmental factors on vehicle flow
-   - Seasonal patterns in traffic behavior
+   ![Traffic-Environment Relationship](outputs/streaming/traffic_vs_environment.png)
+   - Impact of environmental conditions on traffic
+   - Combined analysis of weather and vehicle flow
+   - Predictive patterns
 
 ### Understanding IoT Data
 IoT (Internet of Things) data in this project represents:
