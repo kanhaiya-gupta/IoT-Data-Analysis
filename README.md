@@ -335,3 +335,109 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Siemens for traffic data
 - MS83200MS sensor for environmental data
 - Open-source community for libraries and tools
+
+## Advanced Analysis Features
+
+### 1. Time Series Analysis
+```
+outputs/advanced_analysis/advanced_time_series_*.png
+```
+![Advanced Time Series](outputs/advanced_analysis/advanced_time_series_*.png)
+
+- **Stationarity Analysis**:
+  - Augmented Dickey-Fuller test for trend detection
+  - Rolling statistics visualization
+  - Multiple seasonal pattern analysis
+- **Components**:
+  - Original time series
+  - Trend component
+  - Seasonal component
+  - Residual component
+- **Key Features**:
+  - 24-hour and weekly seasonal patterns
+  - Rolling mean and standard deviation
+  - Anomaly detection markers
+
+### 2. Anomaly Detection
+```
+outputs/advanced_analysis/anomaly_detection_*.png
+```
+![Anomaly Detection](outputs/advanced_analysis/anomaly_detection_*.png)
+
+- **Isolation Forest Algorithm**:
+  - Detects unusual patterns in traffic and environmental data
+  - Anomaly scoring system
+  - Visual identification of outliers
+- **Key Features**:
+  - Automatic contamination level adjustment
+  - Multi-variable anomaly detection
+  - Anomaly score visualization
+
+### 3. Cross-Correlation Analysis
+```
+outputs/advanced_analysis/cross_correlations.png
+```
+![Cross-Correlations](outputs/advanced_analysis/cross_correlations.png)
+
+- **Lag Analysis**:
+  - Correlation patterns across different time lags
+  - Lead-lag relationships between variables
+  - Maximum correlation identification
+- **Key Features**:
+  - 24-hour lag window
+  - Multiple variable comparison
+  - Statistical significance indicators
+
+### 4. Seasonal Decomposition
+```
+outputs/advanced_analysis/seasonal_decomposition_*.png
+```
+![Seasonal Decomposition](outputs/advanced_analysis/seasonal_decomposition_*.png)
+
+- **Multiple Seasonal Patterns**:
+  - Daily patterns (24-hour cycles)
+  - Weekly patterns (168-hour cycles)
+  - Trend analysis
+- **Key Features**:
+  - Additive and multiplicative decomposition
+  - Residual analysis
+  - Pattern strength indicators
+
+## Advanced Analysis Usage
+
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. Run advanced analysis:
+   ```bash
+   python src/advanced_analysis.py
+   ```
+
+3. View generated visualizations in:
+   ```
+   outputs/advanced_analysis/
+   ```
+
+## Advanced Analysis Insights
+
+1. **Time Series Patterns**:
+   - Strong daily and weekly seasonality in traffic data
+   - Environmental variables show clear diurnal patterns
+   - Trend components reveal long-term changes
+
+2. **Anomaly Detection**:
+   - Identifies unusual traffic patterns
+   - Detects environmental sensor anomalies
+   - Helps in data quality assessment
+
+3. **Cross-Correlation**:
+   - Reveals delayed effects of weather on traffic
+   - Identifies optimal prediction windows
+   - Shows complex inter-variable relationships
+
+4. **Seasonal Analysis**:
+   - Quantifies seasonal pattern strength
+   - Separates trend from seasonal effects
+   - Helps in forecasting model selection
