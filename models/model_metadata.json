@@ -1,0 +1,1 @@
+{"feature_columns": ["precipitation", "humidity", "radiation", "sunshine", "pressure", "temperature", "hour", "day_of_week", "is_weekend", "temp_humidity", "radiation_pressure", "rolling_avg_vehicles", "rolling_std_vehicles"], "timestamp": "2025-04-20T13:29:57.812841", "model_type": "RandomForestClassifier", "model_params": {"memory": null, "steps": [["scale", 
