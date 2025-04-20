@@ -492,3 +492,494 @@ models/
    ```
    models/
    ```
+
+## Data Processing Pipeline
+
+### 1. ETL (Extract, Transform, Load) Pipeline
+
+#### Data Extraction
+```
+src/data_acquisition.py
+```
+- **Environmental Data**:
+  - Source: MS83200MS sensor
+  - Format: JSON files
+  - Variables: temperature, humidity, radiation, pressure, sunshine, precipitation
+  - Frequency: 10-minute intervals
+
+- **Traffic Data**:
+  - Source: Siemens sensors
+  - Format: JSON files
+  - Categories: light vehicles, heavy vehicles
+  - Frequency: 10-minute intervals
+
+- **Real-time Data**:
+  - MQTT streaming for live sensor data
+  - API endpoints for real-time updates
+  - WebSocket connections for continuous data flow
+
+#### Data Transformation
+```
+src/data_processing.py
+```
+- **Cleaning**:
+  - Missing value handling (drop or forward fill)
+  - Outlier detection and removal
+  - Data type conversion
+  - Timestamp standardization
+
+- **Feature Engineering**:
+  - Time-based features (hour, day_of_week, is_weekend)
+  - Environmental interactions (temp_humidity, radiation_pressure)
+  - Rolling statistics (1-hour windows)
+  - Lag features for temporal patterns
+
+- **Data Integration**:
+  - Combining environmental and traffic data
+  - Time alignment and resampling
+  - Feature normalization and scaling
+  - Target variable creation
+
+#### Data Loading
+- **Storage Formats**:
+  - Processed data saved as CSV/JSON
+  - Model outputs in PNG/PDF formats
+  - Logs in text format
+  - Models in pickle format
+
+- **Directory Structure**:
+  ```
+  IoT-Data-Analysis/
+  ├── data/                      # Raw and processed data
+  │   ├── raw/                  # Original sensor data
+  │   └── processed/            # Cleaned and transformed data
+  ├── models/                   # Trained models and metadata
+  ├── outputs/                  # Analysis results
+  │   ├── streaming/           # Real-time analysis
+  │   ├── training/            # Model training outputs
+  │   └── advanced_analysis/    # Detailed analysis results
+  └── logs/                    # System and processing logs
+  ```
+
+### 2. Machine Learning Pipeline
+
+#### Data Preparation
+```
+src/model_training.py
+```
+- **Feature Selection**:
+  - Environmental variables
+  - Time-based features
+  - Interaction terms
+  - Rolling statistics
+
+- **Target Variable**:
+  - Binary classification (high/low traffic)
+  - Dynamic threshold based on historical data
+  - Class balancing techniques
+
+- **Data Splitting**:
+  - Train-test split (80-20)
+  - Time-based validation
+  - Cross-validation folds
+
+#### Model Training
+- **Model Types**:
+  - Random Forest Classifier
+  - Neural Network (PyTorch)
+  - Logistic Regression
+
+- **Training Process**:
+  - Hyperparameter tuning (GridSearchCV)
+  - Cross-validation
+  - Early stopping
+  - Model checkpointing
+
+- **Evaluation Metrics**:
+  - Accuracy, Precision, Recall, F1
+  - ROC curves and AUC
+  - Confusion matrices
+  - Feature importance
+
+#### Model Deployment
+- **Model Saving**:
+  - Serialized model files
+  - Model metadata
+  - Feature importance plots
+  - Performance metrics
+
+- **Real-time Prediction**:
+  - MQTT integration
+  - API endpoints
+  - Batch prediction capabilities
+  - Model versioning
+
+### 3. Analysis and Visualization Pipeline
+
+#### Basic Analysis
+```
+src/data_analysis.py
+```
+- Statistical summaries
+- Correlation analysis
+- Time series patterns
+- Distribution analysis
+
+#### Advanced Analysis
+```
+src/advanced_analysis.py
+```
+- Stationarity testing
+- Seasonal decomposition
+- Anomaly detection
+- Cross-correlation analysis
+
+#### Visualization
+```
+src/data_visualization.py
+```
+- Time series plots
+- Correlation heatmaps
+- Distribution plots
+- Model performance visualizations
+
+### Pipeline Integration
+
+1. **Data Flow**:
+   ```
+   Raw Data → ETL Pipeline → ML Pipeline → Analysis → Visualization
+   ```
+
+2. **Real-time Processing**:
+   ```
+   Sensor Data → MQTT Stream → Real-time Processing → Live Predictions
+   ```
+
+3. **Batch Processing**:
+   ```
+   Historical Data → ETL → Model Training → Analysis → Reports
+   ```
+
+### Usage Examples
+
+1. **ETL Pipeline**:
+   ```python
+   # Load and process data
+   from data_acquisition import load_environmental_data, load_traffic_data
+   from data_processing import clean_data, resample_data, combine_iot_data
+   
+   # Extract
+   env_data = load_environmental_data()
+   traffic_data = load_traffic_data()
+   
+   # Transform
+   cleaned_data = clean_data(env_data)
+   resampled_data = resample_data(traffic_data)
+   combined_data = combine_iot_data(cleaned_data, resampled_data)
+   ```
+
+2. **ML Pipeline**:
+   ```python
+   # Train and evaluate model
+   from model_training import IoTModel
+   
+   # Initialize model
+   model = IoTModel()
+   
+   # Prepare data
+   X, y = model.prepare_data(combined_data)
+   
+   # Train model
+   model.train_model(X, y, model_type="random_forest")
+   
+   # Make predictions
+   predictions = model.predict(new_data)
+   ```
+
+3. **Analysis Pipeline**:
+   ```python
+   # Analyze and visualize
+   from data_analysis import analyze_traffic_data, analyze_environmental_data
+   from data_visualization import visualize_all
+   
+   # Run analysis
+   traffic_stats = analyze_traffic_data(traffic_data)
+   env_stats = analyze_environmental_data(env_data)
+   
+   # Generate visualizations
+   visualize_all(traffic_stats, env_stats)
+   ```
+
+## System Architecture and Pipeline Explanation
+
+### ETL Pipeline Architecture
+
+#### 1. Data Extraction Layer
+```
+src/data_acquisition.py
+```
+- **Purpose**: Handles data ingestion from multiple sources
+- **Components**:
+  - File-based data loading (JSON/CSV)
+  - Real-time data streaming (MQTT)
+  - API integration for external data
+- **Key Features**:
+  - Automatic data type detection
+  - Timestamp parsing and standardization
+  - Error handling and retry mechanisms
+  - Data validation checks
+
+#### 2. Data Transformation Layer
+```
+src/data_processing.py
+```
+- **Purpose**: Processes and prepares data for analysis
+- **Components**:
+  - Data cleaning and validation
+  - Feature engineering
+  - Data integration
+  - Time series processing
+- **Key Features**:
+  - Missing value imputation
+  - Outlier detection and handling
+  - Feature creation and selection
+  - Data normalization and scaling
+
+#### 3. Data Loading Layer
+- **Purpose**: Stores processed data and analysis results
+- **Components**:
+  - File system storage
+  - Database integration (optional)
+  - Cache management
+- **Key Features**:
+  - Efficient data storage formats
+  - Version control for processed data
+  - Backup and recovery mechanisms
+  - Access control and security
+
+### ML Pipeline Architecture
+
+#### 1. Data Preparation Layer
+```
+src/model_training.py
+```
+- **Purpose**: Prepares data for model training
+- **Components**:
+  - Feature selection
+  - Target variable creation
+  - Data splitting
+  - Data balancing
+- **Key Features**:
+  - Automated feature selection
+  - Dynamic threshold calculation
+  - Time-based validation splitting
+  - Class imbalance handling
+
+#### 2. Model Training Layer
+- **Purpose**: Handles model training and evaluation
+- **Components**:
+  - Model selection
+  - Hyperparameter tuning
+  - Cross-validation
+  - Model evaluation
+- **Key Features**:
+  - Multiple model support
+  - Automated hyperparameter optimization
+  - Performance tracking
+  - Model versioning
+
+#### 3. Model Deployment Layer
+- **Purpose**: Manages model deployment and serving
+- **Components**:
+  - Model serialization
+  - API endpoints
+  - Real-time prediction
+  - Model monitoring
+- **Key Features**:
+  - REST API support
+  - Batch prediction capabilities
+  - Performance monitoring
+  - Model retraining triggers
+
+### Pipeline Integration
+
+#### 1. Data Flow Architecture
+```
+Raw Data → ETL Pipeline → ML Pipeline → Analysis → Visualization
+```
+- **ETL Pipeline**:
+  - Extracts raw data from sensors and files
+  - Transforms data into analysis-ready format
+  - Loads processed data into storage
+
+- **ML Pipeline**:
+  - Prepares data for model training
+  - Trains and evaluates models
+  - Deploys models for prediction
+
+- **Analysis Pipeline**:
+  - Performs statistical analysis
+  - Generates insights and visualizations
+  - Creates reports and dashboards
+
+#### 2. Real-time Processing Architecture
+```
+Sensor Data → MQTT Stream → Real-time Processing → Live Predictions
+```
+- **Data Streaming**:
+  - MQTT broker for sensor data
+  - WebSocket for real-time updates
+  - Message queue for processing
+
+- **Processing Pipeline**:
+  - Real-time data cleaning
+  - Feature extraction
+  - Model prediction
+  - Result broadcasting
+
+- **Output Generation**:
+  - Live visualizations
+  - Real-time alerts
+  - Performance monitoring
+
+#### 3. Batch Processing Architecture
+```
+Historical Data → ETL → Model Training → Analysis → Reports
+```
+- **Data Processing**:
+  - Bulk data loading
+  - Batch transformations
+  - Scheduled processing
+
+- **Model Operations**:
+  - Periodic model retraining
+  - Batch predictions
+  - Performance evaluation
+
+- **Analysis Generation**:
+  - Scheduled reports
+  - Trend analysis
+  - Performance metrics
+
+### System Integration Points
+
+#### 1. Data Integration
+- **ETL to ML**:
+  - Feature store for processed data
+  - Data versioning system
+  - Metadata management
+
+- **ML to Analysis**:
+  - Prediction results storage
+  - Model performance metrics
+  - Feature importance data
+
+#### 2. Process Integration
+- **Scheduling**:
+  - Automated pipeline execution
+  - Dependency management
+  - Error handling and recovery
+
+- **Monitoring**:
+  - Pipeline health checks
+  - Performance metrics
+  - Resource utilization
+
+#### 3. Output Integration
+- **Visualization**:
+  - Dashboard updates
+  - Report generation
+  - Alert system
+
+- **Storage**:
+  - Results archiving
+  - Version control
+  - Backup management
+
+### System Components Interaction
+
+#### 1. Data Flow
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Raw Data   │────▶│  ETL Pipe   │────▶│  ML Pipe    │
+└─────────────┘     └─────────────┘     └─────────────┘
+                           │                   │
+                           ▼                   ▼
+                    ┌─────────────┐     ┌─────────────┐
+                    │  Analysis   │◀────│  Predictions│
+                    └─────────────┘     └─────────────┘
+```
+
+#### 2. Real-time Processing
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Sensors    │────▶│  MQTT/WS    │────▶│  Processing │
+└─────────────┘     └─────────────┘     └─────────────┘
+                           │                   │
+                           ▼                   ▼
+                    ┌─────────────┐     ┌─────────────┐
+                    │  Live Viz   │◀────│  Predictions│
+                    └─────────────┘     └─────────────┘
+```
+
+#### 3. Batch Processing
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Historical │────▶│  ETL Batch  │────▶│  ML Batch   │
+└─────────────┘     └─────────────┘     └─────────────┘
+                           │                   │
+                           ▼                   ▼
+                    ┌─────────────┐     ┌─────────────┐
+                    │  Reports    │◀────│  Analysis   │
+                    └─────────────┘     └─────────────┘
+```
+
+### System Features and Capabilities
+
+#### 1. Data Processing
+- **Automated Processing**:
+  - Scheduled data ingestion
+  - Automated cleaning and transformation
+  - Batch and real-time processing
+
+- **Data Quality**:
+  - Validation checks
+  - Error detection
+  - Data consistency
+
+- **Scalability**:
+  - Distributed processing
+  - Resource optimization
+  - Load balancing
+
+#### 2. Model Management
+- **Model Lifecycle**:
+  - Version control
+  - Performance tracking
+  - Automated retraining
+
+- **Prediction Capabilities**:
+  - Real-time predictions
+  - Batch predictions
+  - Confidence scoring
+
+- **Monitoring**:
+  - Performance metrics
+  - Resource utilization
+  - Error tracking
+
+#### 3. Analysis and Reporting
+- **Visualization**:
+  - Interactive dashboards
+  - Custom reports
+  - Real-time updates
+
+- **Insights**:
+  - Trend analysis
+  - Pattern detection
+  - Anomaly identification
+
+- **Integration**:
+  - API endpoints
+  - Export capabilities
+  - Third-party integration
