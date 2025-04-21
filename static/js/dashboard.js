@@ -105,60 +105,27 @@ ws.onmessage = (event) => {
             return;
         }
         
-        // Check if we have statistics data
-        if (!data.statistics || typeof data.statistics !== 'object') {
-            console.warn('Missing or invalid statistics data');
-            return;
-        }
-        
-        // Get timestamp from statistics
-        const timestamp = data.statistics.timestamp ? new Date(data.statistics.timestamp) : new Date();
-        
         // Process statistics data
         if (data.statistics) {
-            // Handle format with mean and std
-            if (data.statistics.mean) {
-                // Process light vehicle mean
-                if (typeof data.statistics.mean.light_vehicle === 'number') {
-                    statisticsData.push({
-                        x: timestamp,
-                        y: data.statistics.mean.light_vehicle,
-                        type: 'light_vehicle',
-                        std: data.statistics.std?.light_vehicle
-                    });
-                }
-                
-                // Process heavy vehicle mean
-                if (typeof data.statistics.mean.heavy_vehicle === 'number') {
-                    statisticsData.push({
-                        x: timestamp,
-                        y: data.statistics.mean.heavy_vehicle,
-                        type: 'heavy_vehicle',
-                        std: data.statistics.std?.heavy_vehicle
-                    });
-                }
-            }
-            // Handle format with individual values
-            else if (data.statistics.light_vehicle || data.statistics.heavy_vehicle) {
-                // Process light vehicle value
-                if (data.statistics.light_vehicle && typeof data.statistics.light_vehicle.value === 'number') {
-                    statisticsData.push({
-                        x: timestamp,
-                        y: data.statistics.light_vehicle.value,
-                        type: 'light_vehicle'
-                    });
-                }
-                
-                // Process heavy vehicle value
-                if (data.statistics.heavy_vehicle && typeof data.statistics.heavy_vehicle.value === 'number') {
-                    statisticsData.push({
-                        x: timestamp,
-                        y: data.statistics.heavy_vehicle.value,
-                        type: 'heavy_vehicle'
-                    });
-                }
+            // Process light vehicle data
+            if (data.statistics.light_vehicle) {
+                statisticsData.push({
+                    x: new Date(data.statistics.light_vehicle.timestamp),
+                    y: data.statistics.light_vehicle.value,
+                    type: 'light_vehicle'
+                });
             }
             
+            // Process heavy vehicle data
+            if (data.statistics.heavy_vehicle) {
+                statisticsData.push({
+                    x: new Date(data.statistics.heavy_vehicle.timestamp),
+                    y: data.statistics.heavy_vehicle.value,
+                    type: 'heavy_vehicle'
+                });
+            }
+            
+            // Keep only the last MAX_POINTS points
             if (statisticsData.length > MAX_POINTS) {
                 statisticsData = statisticsData.slice(-MAX_POINTS);
             }
@@ -192,20 +159,29 @@ ws.onmessage = (event) => {
                 }
             ], {
                 title: 'Vehicle Count Over Time',
-                xaxis: { title: 'Time' },
-                yaxis: { title: 'Count' }
+                xaxis: { 
+                    title: 'Time',
+                    type: 'date'
+                },
+                yaxis: { 
+                    title: 'Count',
+                    range: [0, Math.max(...statisticsData.map(d => d.y)) * 1.1]
+                }
             });
         }
         
         // Process anomalies data
-        if (data.anomalies && data.anomalies.length > 0) {
+        if (data.anomalies && Array.isArray(data.anomalies)) {
             data.anomalies.forEach(anomaly => {
                 anomaliesData.push({
                     x: new Date(anomaly.timestamp),
-                    y: anomaly.value,
-                    type: anomaly.type
+                    y: 1, // Use constant value for visualization
+                    type: anomaly.type,
+                    severity: anomaly.severity,
+                    message: anomaly.message
                 });
             });
+            
             if (anomaliesData.length > MAX_POINTS) {
                 anomaliesData = anomaliesData.slice(-MAX_POINTS);
             }
@@ -217,49 +193,78 @@ ws.onmessage = (event) => {
                 type: 'scatter',
                 mode: 'markers',
                 name: 'Anomalies',
-                marker: { color: 'red' }
+                marker: { 
+                    color: anomaliesData.map(d => d.severity === 'critical' ? 'red' : 'orange'),
+                    size: 10
+                },
+                text: anomaliesData.map(d => d.message),
+                hoverinfo: 'text'
             }], {
                 title: 'Detected Anomalies',
-                xaxis: { title: 'Time' },
-                yaxis: { title: 'Value' }
+                xaxis: { title: 'Time', type: 'date' },
+                yaxis: { 
+                    title: 'Anomaly',
+                    range: [0, 2],
+                    showticklabels: false
+                }
             });
         }
         
         // Process data quality data
-        if (data.data_quality && 
-            typeof data.data_quality === 'object' && 
-            typeof data.data_quality.completeness === 'number') {
+        if (data.data_quality) {
             qualityData.push({
-                x: timestamp,
-                y: data.data_quality.completeness
+                x: new Date(data.data_quality.timestamp),
+                completeness: data.data_quality.completeness,
+                accuracy: data.data_quality.accuracy,
+                consistency: data.data_quality.consistency
             });
             
             if (qualityData.length > MAX_POINTS) {
-                qualityData.shift();
+                qualityData = qualityData.slice(-MAX_POINTS);
             }
             
             // Update data quality plot
-            Plotly.newPlot(qualityPlot, [{
-                x: qualityData.map(d => d.x),
-                y: qualityData.map(d => d.y),
-                type: 'scatter',
-                mode: 'lines+markers',
-                name: 'Data Completeness'
-            }], {
-                title: 'Data Quality Over Time',
-                xaxis: { title: 'Time' },
-                yaxis: { title: 'Completeness', range: [0, 1] }
+            Plotly.newPlot(qualityPlot, [
+                {
+                    x: qualityData.map(d => d.x),
+                    y: qualityData.map(d => d.completeness),
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Completeness'
+                },
+                {
+                    x: qualityData.map(d => d.x),
+                    y: qualityData.map(d => d.accuracy),
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Accuracy'
+                },
+                {
+                    x: qualityData.map(d => d.x),
+                    y: qualityData.map(d => d.consistency),
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    name: 'Consistency'
+                }
+            ], {
+                title: 'Data Quality Metrics',
+                xaxis: { title: 'Time', type: 'date' },
+                yaxis: { title: 'Score', range: [0, 1] }
             });
         }
         
         // Process alerts data
-        if (data.alerts && data.alerts.length > 0) {
+        if (data.alerts && Array.isArray(data.alerts)) {
             data.alerts.forEach(alert => {
                 alertsData.push({
                     x: new Date(alert.timestamp),
-                    y: alert.value
+                    y: 1, // Use constant value for visualization
+                    type: alert.type,
+                    severity: alert.severity,
+                    message: alert.message
                 });
             });
+            
             if (alertsData.length > MAX_POINTS) {
                 alertsData = alertsData.slice(-MAX_POINTS);
             }
@@ -271,11 +276,20 @@ ws.onmessage = (event) => {
                 type: 'scatter',
                 mode: 'markers',
                 name: 'Alerts',
-                marker: { color: 'orange' }
+                marker: { 
+                    color: alertsData.map(d => d.severity === 'critical' ? 'red' : 'orange'),
+                    size: 10
+                },
+                text: alertsData.map(d => d.message),
+                hoverinfo: 'text'
             }], {
                 title: 'System Alerts',
-                xaxis: { title: 'Time' },
-                yaxis: { title: 'Value' }
+                xaxis: { title: 'Time', type: 'date' },
+                yaxis: { 
+                    title: 'Alert',
+                    range: [0, 2],
+                    showticklabels: false
+                }
             });
         }
     } catch (error) {

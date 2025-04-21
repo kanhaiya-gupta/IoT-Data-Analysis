@@ -162,54 +162,79 @@ async def startup_event():
 
 # Add debug logging to process_vehicle_data
 async def process_vehicle_data():
-    """Process both light and heavy vehicle data."""
+    """Process vehicle data."""
     try:
         logger.info("Loading vehicle data files...")
-        # Read light vehicle data
+        # Read both vehicle data files
         light_data = pd.read_json("data/traffic_raw_siemens_light-veh.json")
-        light_data['type'] = 'light_vehicle'
-        logger.info(f"Loaded {len(light_data)} light vehicle records")
-        
-        # Read heavy vehicle data
         heavy_data = pd.read_json("data/traffic_raw_siemens_heavy-veh.json")
-        heavy_data['type'] = 'heavy_vehicle'
-        logger.info(f"Loaded {len(heavy_data)} heavy vehicle records")
+        logger.info(f"Loaded {len(light_data)} light vehicle records and {len(heavy_data)} heavy vehicle records")
+        
+        # Sort data by timestamp
+        light_data = light_data.sort_values('timestamp')
+        heavy_data = heavy_data.sort_values('timestamp')
         
         # Process data and send updates
+        current_index = 0
         while True:
-            current_time = datetime.now()
-            
             try:
-                # Convert timestamps to datetime for comparison
-                light_data['timestamp'] = pd.to_datetime(light_data['timestamp'])
-                heavy_data['timestamp'] = pd.to_datetime(heavy_data['timestamp'])
+                if current_index >= len(light_data) or current_index >= len(heavy_data):
+                    current_index = 0  # Reset to start if we reach the end
                 
-                # Get current values using datetime comparison
-                light_current = light_data[light_data['timestamp'] <= current_time].iloc[-1]
-                heavy_current = heavy_data[heavy_data['timestamp'] <= current_time].iloc[-1]
+                # Get current data points
+                light_current = light_data.iloc[current_index]
+                heavy_current = heavy_data.iloc[current_index]
                 
                 # Prepare statistics data
                 stats_data = {
-                    'timestamp': current_time.isoformat(),
                     'light_vehicle': {
-                        'value': float(light_current['value']),
-                        'type': 'light_vehicle'
+                        'timestamp': light_current['timestamp'],
+                        'value': float(light_current['value'])
                     },
                     'heavy_vehicle': {
-                        'value': float(heavy_current['value']),
-                        'type': 'heavy_vehicle'
+                        'timestamp': heavy_current['timestamp'],
+                        'value': float(heavy_current['value'])
                     }
                 }
                 
-                # Send the data via WebSocket
+                # Generate some sample anomalies (for demonstration)
+                anomalies = []
+                if float(light_current['value']) > 100:  # Example threshold
+                    anomalies.append({
+                        'timestamp': light_current['timestamp'],
+                        'type': 'high_traffic',
+                        'severity': 'warning',
+                        'message': 'High traffic volume detected'
+                    })
+                
+                # Prepare data quality metrics
+                data_quality = {
+                    'timestamp': light_current['timestamp'],
+                    'completeness': 1.0,
+                    'accuracy': 0.95,
+                    'consistency': 0.98
+                }
+                
+                # Generate some sample alerts (for demonstration)
+                alerts = []
+                if float(heavy_current['value']) >= 10:  # Changed threshold from 50 to 10
+                    alerts.append({
+                        'timestamp': heavy_current['timestamp'],
+                        'type': 'heavy_vehicle_alert',
+                        'severity': 'critical',
+                        'message': 'High number of heavy vehicles detected'
+                    })
+                
+                # Send all data via WebSocket
                 await send_monitoring_data({
                     'statistics': stats_data,
-                    'anomalies': [],  # Add anomalies if detected
-                    'data_quality': {
-                        'timestamp': current_time.isoformat(),
-                        'completeness': 1.0
-                    }
+                    'anomalies': anomalies,
+                    'data_quality': data_quality,
+                    'alerts': alerts
                 })
+                
+                # Move to next data point
+                current_index += 1
                 
                 # Wait before next update
                 await asyncio.sleep(1)

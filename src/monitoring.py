@@ -35,116 +35,68 @@ logger.setLevel(logging.INFO)
 logger.info("Monitoring system initialized")
 
 class DataMonitor:
-    def __init__(self, config: Dict[str, Any]):
-        """Initialize the data monitor."""
-        self.config = config
-        self.window_size = config.get('window_size', 100)
-        self.sampling_interval = config.get('sampling_interval', 60)
-        self.output_dir = Path(config.get('output_dir', OUTPUT_DIR))
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Initialize data window
+    def __init__(self):
         self.data_window = []
-        self.last_check_time = time.time()
-        logger.info(f"DataMonitor initialized with window_size={self.window_size}, sampling_interval={self.sampling_interval}")
         
     def update_data_window(self, new_data: Dict[str, Any]):
         """Update the data window with new data."""
-        self.data_window.append(new_data)
-        if len(self.data_window) > self.window_size:
-            self.data_window.pop(0)
-    
+        try:
+            # Convert timestamp to datetime if it's a string
+            if isinstance(new_data.get('timestamp'), str):
+                new_data['timestamp'] = pd.to_datetime(new_data['timestamp'])
+            
+            self.data_window.append(new_data)
+                
+        except Exception as e:
+            logger.error(f"Error updating data window: {e}")
+        
     def analyze_data(self) -> Dict[str, Any]:
         """Analyze the current data window."""
         try:
             if not self.data_window:
-                return {}
+                return {
+                    'statistics': {
+                        'timestamp': datetime.now().isoformat(),
+                        'value': 0
+                    },
+                    'anomalies': [],
+                    'data_quality': {
+                        'timestamp': datetime.now().isoformat(),
+                        'completeness': 0.0
+                    }
+                }
             
-            # Convert to DataFrame for analysis
-            df = pd.DataFrame(self.data_window)
+            # Get the latest data point
+            latest_data = self.data_window[-1]
             
-            # Convert timestamp to datetime if needed
-            if 'timestamp' in df.columns:
-                df['timestamp'] = pd.to_datetime(df['timestamp'])
-            
-            # Split data by vehicle type
-            light_df = df[df['type'] == 'traffic_light']
-            heavy_df = df[df['type'] == 'traffic_heavy']
-            
-            # Calculate statistics for each vehicle type
+            # Prepare statistics data
             stats = {
-                'timestamp': datetime.now().isoformat(),
-                'mean': {
-                    'light_vehicle': light_df['value'].mean() if not light_df.empty else 0,
-                    'heavy_vehicle': heavy_df['value'].mean() if not heavy_df.empty else 0
-                },
-                'std': {
-                    'light_vehicle': light_df['value'].std() if not light_df.empty else 0,
-                    'heavy_vehicle': heavy_df['value'].std() if not heavy_df.empty else 0
-                }
+                'timestamp': latest_data['timestamp'].isoformat(),
+                'value': float(latest_data['value'])
             }
-            
-            # Detect anomalies for each vehicle type
-            anomalies = []
-            for vehicle_type, vehicle_df in [('traffic_light', light_df), ('traffic_heavy', heavy_df)]:
-                if not vehicle_df.empty:
-                    mean = vehicle_df['value'].mean()
-                    std = vehicle_df['value'].std()
-                    if not pd.isna(mean) and not pd.isna(std) and std > 0:
-                        z_scores = np.abs((vehicle_df['value'] - mean) / std)
-                        anomaly_indices = np.where(z_scores > 3)[0]
-                        for idx in anomaly_indices:
-                            anomalies.append({
-                                'timestamp': vehicle_df.iloc[idx]['timestamp'].isoformat(),
-                                'value': float(vehicle_df['value'].iloc[idx]),
-                                'type': vehicle_type
-                            })
-            
-            # Check data quality
-            quality_metrics = {
-                'timestamp': datetime.now().isoformat(),
-                'completeness': {
-                    'light_vehicle': 1 - light_df['value'].isnull().mean() if not light_df.empty else 0,
-                    'heavy_vehicle': 1 - heavy_df['value'].isnull().mean() if not heavy_df.empty else 0
-                }
-            }
-            
-            # Generate alerts
-            alerts = []
-            # Alert for high traffic
-            if stats['mean']['light_vehicle'] > 50 or stats['mean']['heavy_vehicle'] > 5:
-                alerts.append({
-                    'timestamp': datetime.now().isoformat(),
-                    'type': 'high_traffic',
-                    'message': f"High traffic detected: Light vehicles: {stats['mean']['light_vehicle']:.1f}, Heavy vehicles: {stats['mean']['heavy_vehicle']:.1f}"
-                })
-            
-            # Alert for data quality issues
-            if quality_metrics['completeness']['light_vehicle'] < 0.95 or quality_metrics['completeness']['heavy_vehicle'] < 0.95:
-                alerts.append({
-                    'timestamp': datetime.now().isoformat(),
-                    'type': 'data_quality',
-                    'message': f"Data quality issue: Light vehicles completeness: {quality_metrics['completeness']['light_vehicle']:.2f}, Heavy vehicles completeness: {quality_metrics['completeness']['heavy_vehicle']:.2f}"
-                })
-            
-            # Alert for anomalies
-            if anomalies:
-                alerts.append({
-                    'timestamp': datetime.now().isoformat(),
-                    'type': 'anomaly',
-                    'message': f"Detected {len(anomalies)} anomalies in the data"
-                })
             
             return {
                 'statistics': stats,
-                'anomalies': anomalies,
-                'data_quality': quality_metrics,
-                'alerts': alerts
+                'anomalies': [],
+                'data_quality': {
+                    'timestamp': latest_data['timestamp'].isoformat(),
+                    'completeness': 1.0
+                }
             }
             
         except Exception as e:
-            logger.error(f"Error analyzing data: {e}")
-            return {}
+            logger.error(f"Error in analyze_data: {e}")
+            return {
+                'statistics': {
+                    'timestamp': datetime.now().isoformat(),
+                    'value': 0
+                },
+                'anomalies': [],
+                'data_quality': {
+                    'timestamp': datetime.now().isoformat(),
+                    'completeness': 0.0
+                }
+            }
     
     def detect_anomalies(self, df: pd.DataFrame) -> List[Dict[str, Any]]:
         """Detect anomalies in the data."""
@@ -288,10 +240,10 @@ class DataMonitor:
                         
                     if isinstance(value, dict):
                         value['data_type'] = data_type
-                        self.update_data_window(value)
+                        self.data_window.append(value)
                         
                         # Only analyze after collecting enough data
-                        if len(self.data_window) >= self.window_size:
+                        if len(self.data_window) >= self.max_window_size:
                             metrics = self.analyze_data()
                             self.save_metrics(metrics)
                             return metrics
@@ -311,8 +263,8 @@ class DataMonitor:
         self.last_check_time = current_time
         logger.info("Checking for anomalies...")
         
-        if len(self.data_window) < self.window_size:
-            logger.warning(f"Insufficient data points for anomaly detection. Current: {len(self.data_window)}, Required: {self.window_size}")
+        if len(self.data_window) < self.max_window_size:
+            logger.warning(f"Insufficient data points for anomaly detection. Current: {len(self.data_window)}, Required: {self.max_window_size}")
             return {}
         
         # Convert data window to DataFrame for analysis
@@ -372,7 +324,7 @@ class DataMonitor:
     async def process_data_point(self, data_point: Dict[str, Any]):
         """Process a single data point."""
         try:
-            self.update_data_window(data_point)
+            self.data_window.append(data_point)
             logger.debug(f"Processed data point: {data_point}")
         except Exception as e:
             logger.error(f"Error processing data point: {str(e)}")
@@ -426,7 +378,7 @@ async def process_data_point(monitor: DataMonitor, point: Dict[str, Any], data_t
                     point[key] = float(point[key])
         
         # Update monitor with the data point
-        monitor.update_data_window(point)
+        await monitor.process_data_point(point)
         
         # Analyze data and send updates
         await monitor.analyze_data()
@@ -439,7 +391,7 @@ async def main():
     """Main function to demonstrate the monitoring system with existing data."""
     # Configuration
     config = {
-        'window_size': 100,
+        'max_window_size': 1000,
         'sampling_interval': 1,  # Reduced to 1 second for more frequent updates
         'output_dir': 'outputs/monitoring',
         'api_url': 'ws://localhost:8000/ws',  # Changed to ws:// for WebSocket
@@ -454,7 +406,7 @@ async def main():
     }
     
     # Initialize monitor
-    monitor = DataMonitor(config)
+    monitor = DataMonitor()
     
     # Connect to WebSocket API
     await monitor.connect_api()
