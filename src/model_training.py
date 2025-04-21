@@ -94,7 +94,7 @@ class IoTModel:
             
             logging.info("Feature creation completed successfully")
             return df
-        except Exception as e:
+    except Exception as e:
             logging.error(f"Error creating features: {e}")
             raise
     
@@ -114,7 +114,7 @@ class IoTModel:
             
             logging.info(f"Target distribution:\n{y.value_counts(normalize=True)}")
             return y
-        except Exception as e:
+    except Exception as e:
             logging.error(f"Error creating target: {e}")
             raise
     
@@ -144,7 +144,7 @@ class IoTModel:
             
             logging.info(f"Data preparation completed. X shape: {X.shape}, y shape: {y.shape}")
             return X, y
-        except Exception as e:
+    except Exception as e:
             logging.error(f"Error preparing data: {e}")
             raise
     
