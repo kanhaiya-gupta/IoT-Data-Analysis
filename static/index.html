@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws://localhost:8001;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>IoT Traffic Monitoring Dashboard</title>
+    <script src="/static/js/lib/plotly-2.27.1.min.js"></script>
+    <script>
+        // Initialize dashboard script flag
+        window.dashboardScriptStarted = false;
+        
+        // Load dashboard script
+        const script = document.createElement('script');
+        script.src = '/static/js/dashboard.js';
+        script.async = false;
+        script.onload = () => {
+            console.log('Dashboard script loaded');
+            window.dashboardScriptStarted = true;
+        };
+        document.head.appendChild(script);
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+        .subtitle {
+            margin-top: 10px;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .plot-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .plot-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .plot {
+            width: 100%;
+            height: 350px;
+        }
+        .plot-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>IoT Traffic Monitoring Dashboard</h1>
+        <div class="subtitle">Real-time Analysis of Vehicle Traffic Patterns</div>
+    </div>
+    
+    <div class="grid-container">
+        <div class="plot-container">
+            <div class="plot-title">Traffic Statistics</div>
+            <div id="statistics-plot" class="plot"></div>
+        </div>
+        
+        <div class="plot-container">
+            <div class="plot-title">Anomaly Detection</div>
+            <div id="anomalies-plot" class="plot"></div>
+        </div>
+        
+        <div class="plot-container">
+            <div class="plot-title">Data Quality Metrics</div>
+            <div id="quality-plot" class="plot"></div>
+        </div>
+        
+        <div class="plot-container">
+            <div class="plot-title">System Alerts</div>
+            <div id="alerts-plot" class="plot"></div>
+        </div>
+    </div>
+
+    <script>
+        // Verify DOM elements
+        function verifyElements() {
+            console.log('Verifying DOM elements...');
+            const requiredElements = {
+                'statistics-plot': 'Statistics plot',
+                'anomalies-plot': 'Anomalies plot',
+                'quality-plot': 'Quality plot',
+                'alerts-plot': 'Alerts plot'
+            };
+            
+            let allFound = true;
+            for (const [id, name] of Object.entries(requiredElements)) {
+                const element = document.getElementById(id);
+                console.log(`${name}:`, element ? 'Found' : 'NOT FOUND');
+                if (!element) allFound = false;
+            }
+            
+            console.log(`All elements ${allFound ? 'found' : 'MISSING'}`);
+            return allFound;
+        }
+
+        // Check elements when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOMContentLoaded event fired');
+                verifyElements();
+            });
+        } else {
+            console.log('DOM already loaded');
+            verifyElements();
+        }
+
+        // Final check when window loads
+        window.addEventListener('load', () => {
+            console.log('Window load event fired');
+            verifyElements();
+        });
+    </script>
+</body>
+</html> 
