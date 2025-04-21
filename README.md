@@ -78,6 +78,8 @@ src/data_acquisition.py
   - API endpoints for real-time updates
   - WebSocket connections for continuous data flow
 
+![Traffic Monitoring](docs/monitoring.png)
+
 #### Data Transformation
 ```
 src/data_processing.py
